@@ -95,16 +95,16 @@ struct PixFlow : public OpticalFlowInterface {
     cv::Size originalSize = rgba0byte.size();
     cv::Size downscaleSize(
       rgba0byte.cols * downscaleFactor, rgba0byte.rows * downscaleFactor);
-    resize(rgba0byte, rgba0byteDownscaled, downscaleSize, 0, 0, CV_INTER_CUBIC);
-    resize(rgba1byte, rgba1byteDownscaled, downscaleSize, 0, 0, CV_INTER_CUBIC);
+    resize(rgba0byte, rgba0byteDownscaled, downscaleSize, 0, 0, INTER_CUBIC);
+    resize(rgba1byte, rgba1byteDownscaled, downscaleSize, 0, 0, INTER_CUBIC);
     Mat motion = Mat(downscaleSize, CV_32F);
     if (prevFlow.dims > 0) {
       usePrevFlowTemporalRegularization = true;
-      resize(prevFlow, prevFlowDownscaled, downscaleSize, 0, 0, CV_INTER_CUBIC);
+      resize(prevFlow, prevFlowDownscaled, downscaleSize, 0, 0, INTER_CUBIC);
       prevFlowDownscaled *= float(prevFlowDownscaled.rows) / float(prevFlow.rows);
 
-      resize(prevI0BGRA, prevI0BGRADownscaled, downscaleSize, 0, 0, CV_INTER_CUBIC);
-      resize(prevI1BGRA, prevI1BGRADownscaled, downscaleSize, 0, 0, CV_INTER_CUBIC);
+      resize(prevI0BGRA, prevI0BGRADownscaled, downscaleSize, 0, 0, INTER_CUBIC);
+      resize(prevI1BGRA, prevI1BGRADownscaled, downscaleSize, 0, 0, INTER_CUBIC);
 
       // do motion detection vs. previous frame's images
       for (int y = 0; y < rgba0byteDownscaled.rows; ++y) {
@@ -119,11 +119,11 @@ struct PixFlow : public OpticalFlowInterface {
 
     // convert to various color spaces
     Mat I0Grey, I1Grey, I0, I1, alpha0, alpha1;
-    vector<Mat> channels0, channels1;
+    std::vector<Mat> channels0, channels1;
     split(rgba0byteDownscaled, channels0);
     split(rgba1byteDownscaled, channels1);
-    cvtColor(rgba0byteDownscaled, I0Grey,  CV_BGRA2GRAY);
-    cvtColor(rgba1byteDownscaled, I1Grey,  CV_BGRA2GRAY);
+    cvtColor(rgba0byteDownscaled, I0Grey,  COLOR_BGRA2GRAY);
+    cvtColor(rgba1byteDownscaled, I1Grey,  COLOR_BGRA2GRAY);
 
     I0Grey.convertTo(I0, CV_32F);
     I1Grey.convertTo(I1, CV_32F);
@@ -137,12 +137,12 @@ struct PixFlow : public OpticalFlowInterface {
     GaussianBlur(I0, I0, Size(kPreBlurKernelWidth, kPreBlurKernelWidth), kPreBlurSigma);
     GaussianBlur(I1, I1, Size(kPreBlurKernelWidth, kPreBlurKernelWidth), kPreBlurSigma);
 
-    vector<Mat> pyramidI0       = buildPyramid(I0);
-    vector<Mat> pyramidI1       = buildPyramid(I1);
-    vector<Mat> pyramidAlpha0   = buildPyramid(alpha0);
-    vector<Mat> pyramidAlpha1   = buildPyramid(alpha1);
-    vector<Mat> prevFlowPyramid = buildPyramid(prevFlowDownscaled);
-    vector<Mat> motionPyramid   = buildPyramid(motion);
+    std::vector<Mat> pyramidI0       = buildPyramid(I0);
+    std::vector<Mat> pyramidI1       = buildPyramid(I1);
+    std::vector<Mat> pyramidAlpha0   = buildPyramid(alpha0);
+    std::vector<Mat> pyramidAlpha1   = buildPyramid(alpha1);
+    std::vector<Mat> prevFlowPyramid = buildPyramid(prevFlowDownscaled);
+    std::vector<Mat> motionPyramid   = buildPyramid(motion);
 
     if (usePrevFlowTemporalRegularization) {
       // rescale the previous flow values at each level of the pyramid
@@ -167,13 +167,13 @@ struct PixFlow : public OpticalFlowInterface {
       }
 
       if (level > 0) { // scale the flow up to the next size
-        resize(flow, flow, pyramidI0[level - 1].size(), 0, 0, CV_INTER_CUBIC);
+        resize(flow, flow, pyramidI0[level - 1].size(), 0, 0, INTER_CUBIC);
         flow *= (1.0f / pyrScaleFactor);
       }
     }
 
     // scale the flow result back to full size
-    resize(flow, flow, originalSize, 0, 0, CV_INTER_LINEAR);
+    resize(flow, flow, originalSize, 0, 0, INTER_LINEAR);
     flow *= (1.0f / downscaleFactor);
     GaussianBlur(
       flow,
@@ -474,8 +474,8 @@ struct PixFlow : public OpticalFlowInterface {
     return a1 + a2 * xR + a3 * yR + a4 * xR * yR;
   }
 
-  vector<Mat> buildPyramid(const Mat& src) {
-    vector<Mat> pyramid = {src};
+  std::vector<Mat> buildPyramid(const Mat& src) {
+    std::vector<Mat> pyramid = {src};
     while (pyramid.size() < kPyrMaxLevels) {
       Size newSize(
         pyramid.back().cols * pyrScaleFactor + 0.5f,
@@ -484,7 +484,7 @@ struct PixFlow : public OpticalFlowInterface {
         break;
       }
       Mat scaledImage;
-      resize(pyramid.back(), scaledImage, newSize, 0, 0, CV_INTER_LINEAR);
+      resize(pyramid.back(), scaledImage, newSize, 0, 0, INTER_LINEAR);
       pyramid.push_back(scaledImage);
     }
     return pyramid;

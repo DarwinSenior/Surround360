@@ -346,7 +346,7 @@ int main(int argc, char** argv) {
   }
 
   Mat rawTest = imreadExceptionOnFail(
-    FLAGS_test_image_path, CV_LOAD_IMAGE_GRAYSCALE | CV_LOAD_IMAGE_ANYDEPTH);
+    FLAGS_test_image_path, IMREAD_GRAYSCALE | IMREAD_ANYDEPTH);
   const uint8_t rawDepth = rawTest.type() & CV_MAT_DEPTH_MASK;
   if (rawDepth == CV_8U) {
     rawTest = convert8bitTo16bit(rawTest);

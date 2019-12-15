@@ -135,7 +135,7 @@ struct PreviewRenderer {
       projectedCamImg,
       warpMat,
       Mat(),
-      CV_INTER_CUBIC,
+      INTER_CUBIC,
       BORDER_CONSTANT);
     return projectedCamImg;
   }
@@ -145,7 +145,7 @@ struct PreviewRenderer {
     vector<Mat> layers;
     for (int i = 0; i < raw.size(); ++i) {
       rgb.push_back(simpleDemosaic(raw[i]));
-      cvtColor(rgb[i], rgb[i], CV_BGR2BGRA);
+      cvtColor(rgb[i], rgb[i], COLOR_BGR2BGRA);
       if (i > 0) {
         topDownAlphaFade(rgb[i]);
       }

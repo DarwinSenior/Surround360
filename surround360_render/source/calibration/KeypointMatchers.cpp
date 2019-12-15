@@ -102,14 +102,13 @@ void getKeypointMatchesWithORB(
   static const bool kUseGPU = false;
   static const float kMatchConfidence = 0.4;
 
-  OrbFeaturesFinder finder;
-
+  Ptr<ORB> orb = ORB::create();
   ImageFeatures imgFeaturesL;
-  finder(imageL, imgFeaturesL);
+  computeImageFeatures(orb, imageL, imgFeaturesL);
   imgFeaturesL.img_idx = 0;
 
   ImageFeatures imgFeaturesR;
-  finder(imageR, imgFeaturesR);
+  computeImageFeatures(orb, imageR, imgFeaturesR);
   imgFeaturesR.img_idx = 1;
 
   vector<ImageFeatures> features = {imgFeaturesL, imgFeaturesR};
@@ -207,7 +206,7 @@ void getKeypointMatchesWithAllAlgorithms(
   findHomography(
     matchesL,
     matchesR,
-    CV_RANSAC,
+    RANSAC,
     kRansacReprojThreshold,
     inlinersMask);
 
@@ -236,7 +235,7 @@ Mat visualizeKeypointMatches(
       pointPair.second + Point2f(imageL.cols, 0),
       kVisPointColor,
       1, // thickness
-      CV_AA);
+      LINE_AA);
   }
   return visualization;
 }

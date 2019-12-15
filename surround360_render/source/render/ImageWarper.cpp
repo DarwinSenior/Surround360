@@ -133,7 +133,7 @@ vector<Mat> convertSphericalToCubemapBicubicRemap(
       faceImage,
       warpMat,
       Mat(),
-      CV_INTER_CUBIC,
+      INTER_CUBIC,
       BORDER_WRAP);
     faceImages.push_back(faceImage);
   }
@@ -168,9 +168,9 @@ void bicubicRemapToSpherical(
   }
   Mat tmp = src;
   if (src.channels() == 3 && dst.channels() == 4) {
-    cvtColor(src, tmp, CV_BGR2BGRA);
+    cvtColor(src, tmp, COLOR_BGR2BGRA);
   }
-  remap(tmp, dst, warp, Mat(), CV_INTER_CUBIC, BORDER_CONSTANT);
+  remap(tmp, dst, warp, Mat(), INTER_CUBIC, BORDER_CONSTANT);
 }
 
 // srcTheta and srcPhi correspond to a pixel in an equirectangular projection.

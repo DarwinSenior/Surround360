@@ -69,7 +69,7 @@ int main(int argc, char** argv) {
   int stepDebugImages = 0;
 
   Mat raw = imreadExceptionOnFail(
-    FLAGS_image_path, CV_LOAD_IMAGE_GRAYSCALE | CV_LOAD_IMAGE_ANYDEPTH);
+    FLAGS_image_path, IMREAD_GRAYSCALE | IMREAD_ANYDEPTH);
 
   Mat raw8;
   Mat raw16;
@@ -78,7 +78,7 @@ int main(int argc, char** argv) {
     raw8 = raw;
     raw16 = convert8bitTo16bit(raw.clone());
   } else if (rawDepth == CV_16U) {
-    raw8 = imreadExceptionOnFail(FLAGS_image_path, CV_LOAD_IMAGE_GRAYSCALE);
+    raw8 = imreadExceptionOnFail(FLAGS_image_path, IMREAD_GRAYSCALE);
     raw16 = raw;
   } else {
     throw VrCamException("Input image is not 8-bit or 16-bit");

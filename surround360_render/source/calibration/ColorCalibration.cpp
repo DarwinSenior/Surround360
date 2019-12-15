@@ -444,7 +444,7 @@ Vec3f findBlackLevel(
   for (int i = 0; i < contoursFiltered.size(); ++i) {
     // Create contour mask
     blackHoleMasks[i] = Mat::zeros(blackHoleMask.size(), CV_8UC1);
-    drawContours(blackHoleMasks[i], contoursFiltered, i, Scalar(255), CV_FILLED);
+    drawContours(blackHoleMasks[i], contoursFiltered, i, Scalar(255), FILLED);
 
     Mat rawNormalized = getRaw(ispConfigFile, raw16);
     static const bool kIsRaw = true;
@@ -464,7 +464,7 @@ Vec3f findBlackLevel(
 
   if (saveDebugImages) {
     Mat rawRGB(raw16.size(), CV_8UC3);
-    cvtColor(raw16, rawRGB, CV_GRAY2RGB);
+    cvtColor(raw16, rawRGB, COLOR_GRAY2RGB);
     blackHoleMask = blackHoleMasks[minNormIdx];
     rawRGB.setTo(Scalar(0, maxPixelValue, 0), blackHoleMask);
 
@@ -637,7 +637,7 @@ vector<ColorPatch> detectColorChart(
 
     // Create patch mask
     Mat patchMask(bw.size(), CV_8UC1, Scalar::all(0));
-    drawContours(patchMask, contours, i, 255, CV_FILLED);
+    drawContours(patchMask, contours, i, 255, cv::FILLED);
 
     // Add patch to list
     ColorPatch colorPatch;
@@ -661,7 +661,7 @@ vector<ColorPatch> detectColorChart(
 
   if (saveDebugImages) {
     Mat rgbDraw = image;
-    cvtColor(rgbDraw, rgbDraw, CV_GRAY2RGB);
+    cvtColor(rgbDraw, rgbDraw, COLOR_GRAY2RGB);
     rgbDraw = drawPatches(rgbDraw, colorPatchListSorted);
     const string patchesImageFilename =
       outputDir + "/" + to_string(++stepDebugImages) + "_detected_patches.png";
@@ -778,8 +778,8 @@ vector<vector<Point>> findContours(
     image,
     contours,
     hierarchy,
-    CV_RETR_TREE,
-    CV_CHAIN_APPROX_SIMPLE,
+    RETR_TREE,
+    CHAIN_APPROX_SIMPLE,
     kOffset);
 
   // Straighten contours to minimize number of vertices
@@ -962,8 +962,8 @@ Mat drawPatches(const Mat& image, vector<ColorPatch>& colorPatches) {
       colorPatches[i].mask,
       contours,
       hierarchy,
-      CV_RETR_TREE,
-      CV_CHAIN_APPROX_SIMPLE,
+      RETR_TREE,
+      CHAIN_APPROX_SIMPLE,
       kOffset);
     static const int kContourIdx = 0;
     static const Scalar kColorG = Scalar(0, 255, 0);

@@ -51,8 +51,8 @@ void combineBottomImagesWithPoleRemoval(
   const string bottomImageFilename = frameNumber + ".png";
   const string bottomImagePath = cameraDir + "/" + bottomImageFilename;
   const string bottomImagePath2 = camera2Dir + "/" + bottomImageFilename;
-  bottomImage = imreadExceptionOnFail(bottomImagePath, CV_LOAD_IMAGE_COLOR);
-  Mat bottomImage2 = imreadExceptionOnFail(bottomImagePath2, CV_LOAD_IMAGE_COLOR);
+  bottomImage = imreadExceptionOnFail(bottomImagePath, IMREAD_COLOR);
+  Mat bottomImage2 = imreadExceptionOnFail(bottomImagePath2, IMREAD_COLOR);
   const string poleMaskPath = poleMaskDir + "/" + bottomCamId + ".png";
   const string poleMaskPath2 = poleMaskDir + "/" + bottomCam2Id + ".png";
   Mat bottomRedMask = imreadExceptionOnFail(poleMaskPath, 1);
@@ -66,8 +66,8 @@ void combineBottomImagesWithPoleRemoval(
   }
 
   // make alpha channels from usable radius
-  cvtColor(bottomImage, bottomImage, CV_BGR2BGRA);
-  cvtColor(bottomImage2, bottomImage2, CV_BGR2BGRA);
+  cvtColor(bottomImage, bottomImage, COLOR_BGR2BGRA);
+  cvtColor(bottomImage2, bottomImage2, COLOR_BGR2BGRA);
   circleAlphaCut(bottomImage, bottomCamUsablePixelsRadius);
   circleAlphaCut(bottomImage2, bottomCam2UsablePixelsRadius);
 
@@ -142,7 +142,7 @@ void combineBottomImagesWithPoleRemoval(
     warpedBottomImage2,
     warpMat,
     Mat(),
-    CV_INTER_CUBIC,
+    INTER_CUBIC,
     BORDER_CONSTANT);
 
   const string debugDir = outputDataDir + "/debug/" + frameNumber;

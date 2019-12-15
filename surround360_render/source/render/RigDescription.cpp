@@ -97,7 +97,7 @@ vector<Mat> RigDescription::loadSideCameraImages(
     threads.emplace_back(
       imreadInStdThread,
       imagePath,
-      CV_LOAD_IMAGE_COLOR,
+      IMREAD_COLOR,
       &(images[i]));
   }
   for (auto& thread : threads) {

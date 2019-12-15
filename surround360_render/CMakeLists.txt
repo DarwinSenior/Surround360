@@ -3,8 +3,11 @@ CMAKE_MINIMUM_REQUIRED(VERSION 3.2)
 PROJECT(Surround360Render CXX)
 set(CMAKE_CXX_STANDARD 14)
 
+set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+
 FIND_PACKAGE(OpenCV)
 FIND_PACKAGE(Ceres REQUIRED)
+FIND_PACKAGE(pybind11 REQUIRED)
 
 INCLUDE_DIRECTORIES(${OpenCV_INCLUDE_DIRS})
 INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR}/source)
@@ -14,7 +17,7 @@ INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR}/source/camera_isp)
 INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR}/source/calibration)
 INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR}/source/render)
 INCLUDE_DIRECTORIES(${CMAKE_BINARY_DIR})
-INCLUDE_DIRECTORIES(/usr/local/include/eigen3)
+INCLUDE_DIRECTORIES(/usr/include/eigen3)
 
 if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   # required for clang, including AppleClang
@@ -132,6 +135,7 @@ IF (DEFINED HALIDE_DIR)
        "${CMAKE_CURRENT_BINARY_DIR}/CameraIspGen16${CMAKE_STATIC_LIBRARY_SUFFIX}"
        LibVrCamera
        LibJSON
+       double-conversion
        glog
        gflags
        ${OpenCV_LIBS}
@@ -148,6 +152,7 @@ IF (DEFINED HALIDE_DIR)
        "${CMAKE_CURRENT_BINARY_DIR}/CameraIspGen16${CMAKE_STATIC_LIBRARY_SUFFIX}"
        LibVrCamera
        LibJSON
+       double-conversion
        glog
        gflags
        ${OpenCV_LIBS}
@@ -160,6 +165,7 @@ ELSE()
      Raw2Rgb
      LibVrCamera
      LibJSON
+     double-conversion
      glog
      gflags
      dl
@@ -180,6 +186,7 @@ TARGET_LINK_LIBRARIES(
   LibVrCamera
   LibJSON
   folly
+  double-conversion
   glog
   gflags
   ${OpenCV_LIBS}
@@ -197,8 +204,10 @@ TARGET_LINK_LIBRARIES(
   TestJson
   LibVrCamera
   LibJSON
+  double-conversion
   glog
   gflags
+  ${OpenCV_LIBS}
 )
 
 ### TestOpticalFlow ###
@@ -212,6 +221,7 @@ TARGET_LINK_LIBRARIES(
   TestOpticalFlow
   LibVrCamera
   LibJSON
+  double-conversion
   glog
   gflags
   ${OpenCV_LIBS}
@@ -228,6 +238,7 @@ TARGET_COMPILE_FEATURES(TestLogger PRIVATE cxx_range_for)
 TARGET_LINK_LIBRARIES(
   TestLogger
   LibVrCamera
+  double-conversion
   glog
   gflags
   ${OpenCV_LIBS}
@@ -261,6 +272,7 @@ IF (DEFINED HALIDE_DIR)
       dl
       tinfo
       z
+      double-conversion
       ${OpenCV_LIBS}
       ${PLATFORM_SPECIFIC_LIBS}
     )
@@ -279,6 +291,7 @@ IF (DEFINED HALIDE_DIR)
       Halide
       dl
       z
+      double-conversion
       ${OpenCV_LIBS}
       ${PLATFORM_SPECIFIC_LIBS}
   )
@@ -297,6 +310,7 @@ TARGET_LINK_LIBRARIES(
   TestHyperPreview
   LibVrCamera
   LibJSON
+  double-conversion
   folly
   glog
   gflags
@@ -315,6 +329,7 @@ TARGET_LINK_LIBRARIES(
   TestPoleRemoval
   LibVrCamera
   LibJSON
+  double-conversion
   folly
   gflags
   glog
@@ -333,6 +348,7 @@ TARGET_LINK_LIBRARIES(
   TestExtractAlphaChannel
   LibVrCamera
   LibJSON
+  double-conversion
   gflags
   glog
   ${OpenCV_LIBS}
@@ -359,6 +375,7 @@ IF (DEFINED HALIDE_DIR)
       "${CMAKE_CURRENT_BINARY_DIR}/CameraIspGen16${CMAKE_STATIC_LIBRARY_SUFFIX}"
       LibVrCamera
       LibJSON
+      double-conversion
       gflags
       glog
       ${OpenCV_LIBS}
@@ -377,6 +394,7 @@ IF (DEFINED HALIDE_DIR)
     "${CMAKE_CURRENT_BINARY_DIR}/CameraIspGen16${CMAKE_STATIC_LIBRARY_SUFFIX}"
     LibVrCamera
     LibJSON
+    double-conversion
     gflags
     glog
     ${OpenCV_LIBS}
@@ -395,6 +413,7 @@ ELSE()
     TestColorCalibration
     LibVrCamera
     LibJSON
+    double-conversion
     gflags
     glog
     ${OpenCV_LIBS}
@@ -422,6 +441,7 @@ IF (DEFINED HALIDE_DIR)
       "${CMAKE_CURRENT_BINARY_DIR}/CameraIspGen16${CMAKE_STATIC_LIBRARY_SUFFIX}"
       LibVrCamera
       LibJSON
+      double-conversion
       gflags
       glog
       folly
@@ -441,6 +461,7 @@ IF (DEFINED HALIDE_DIR)
       "${CMAKE_CURRENT_BINARY_DIR}/CameraIspGen16${CMAKE_STATIC_LIBRARY_SUFFIX}"
       LibVrCamera
       LibJSON
+      double-conversion
       gflags
       glog
       folly
@@ -460,6 +481,7 @@ ELSE()
     TestVignettingCalibration
     LibVrCamera
     LibJSON
+    double-conversion
     gflags
     glog
     folly
@@ -479,6 +501,7 @@ TARGET_LINK_LIBRARIES(
   TestVignettingDataAcquisition
   LibVrCamera
   LibJSON
+  double-conversion
   gflags
   glog
   folly
@@ -497,13 +520,28 @@ TARGET_LINK_LIBRARIES(
   GeometricCalibration
   LibVrCamera
   LibJSON
+  double-conversion
   gflags
   glog
   folly
   boost_filesystem
   boost_system
-  double-conversion
   ${OpenCV_LIBS}
   ${PLATFORM_SPECIFIC_LIBS}
   ${CERES_LIBRARIES}
 )
+
+### Python Binding ###
+ADD_LIBRARY(fb360_flow MODULE 
+  python/fb360_flow.cpp)
+TARGET_LINK_LIBRARIES(fb360_flow PRIVATE
+  glog
+  gflags
+  LibVrCamera
+  LibJSON
+  ${OpenCV_LIBS}
+  ${PLATFORM_SPECIFIC_LIBS}
+  pybind11::module)
+SET_TARGET_PROPERTIES(fb360_flow PROPERTIES 
+  POSITION_INDEPENDENT_CODE ON
+  PREFIX "${PYTHON_MODULE_PREFIX}" SUFFIX "${PYTHON_MODULE_EXTENSION}")

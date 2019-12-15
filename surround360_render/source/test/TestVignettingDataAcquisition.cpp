@@ -93,7 +93,7 @@ int main(int argc, char** argv) {
 
     const string imagePath = chartsDir + "/" + imageFilename;
     Mat raw = imreadExceptionOnFail(
-      imagePath, CV_LOAD_IMAGE_GRAYSCALE | CV_LOAD_IMAGE_ANYDEPTH);
+      imagePath, IMREAD_GRAYSCALE | IMREAD_ANYDEPTH);
 
     Mat raw8;
     Mat raw16;
@@ -102,7 +102,7 @@ int main(int argc, char** argv) {
       raw8 = raw;
       raw16 = convert8bitTo16bit(raw.clone());
     } else if (rawDepth == CV_16U) {
-      raw8 = imreadExceptionOnFail(imagePath, CV_LOAD_IMAGE_GRAYSCALE);
+      raw8 = imreadExceptionOnFail(imagePath, IMREAD_GRAYSCALE);
       raw16 = raw;
     } else {
       throw VrCamException("Input image is not 8-bit or 16-bit");

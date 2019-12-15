@@ -47,7 +47,7 @@ Mat visualizeFlowAsVectorField(const Mat& flow, const Mat& image) {
           Point(x + fxy.x * kArrowLen, y + fxy.y * kArrowLen),
           kGridColor,
           1,
-          CV_AA);
+          LINE_AA);
       }
     }
   }
@@ -71,7 +71,7 @@ Mat visualizeFlowColorWheel(const Mat& flow) {
       rgbVis.at<Vec3b>(y, x)[2] = 255.0f * brightness;
     }
   }
-  cvtColor(rgbVis,  rgbVis, CV_HSV2BGR);
+  cvtColor(rgbVis,  rgbVis, COLOR_HSV2BGR);
   return rgbVis;
 }
 

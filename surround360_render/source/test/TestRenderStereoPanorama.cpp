@@ -108,7 +108,7 @@ void projectSideToSpherical(
   // convert, clone or reference, as needed
   Mat tmp = src;
   if (src.channels() == 3) {
-    cvtColor(src, tmp, CV_BGR2BGRA);
+    cvtColor(src, tmp, COLOR_BGR2BGRA);
   } else if (FLAGS_side_alpha_feather_size) {
     tmp = src.clone();
   }
@@ -499,7 +499,7 @@ void poleToSideFlowThread(
     warpedExtendedFisheyeSpherical,
     warp,
     Mat(),
-    CV_INTER_CUBIC,
+    INTER_CUBIC,
     BORDER_CONSTANT);
 
   // take the extra strip on the right side and alpha-blend it out on the left side of the result
@@ -600,7 +600,7 @@ void prepareBottomImagesThread(
     const string cameraDir = FLAGS_imgs_dir + "/" + rig.getBottomCameraId();
     const string bottomImagePath =
       cameraDir + "/" + FLAGS_frame_number + ".png";
-    bottomImage = imreadExceptionOnFail(bottomImagePath, CV_LOAD_IMAGE_COLOR);
+    bottomImage = imreadExceptionOnFail(bottomImagePath, IMREAD_COLOR);
   }
 
   const Camera& camera = rig.findCameraByDirection(-kGlobalUp);
@@ -619,7 +619,7 @@ void prepareBottomImagesThread(
 
   // if we skipped pole removal, there is no alpha channel and we need to add one.
   if (bottomSpherical->type() != CV_8UC4) {
-    cvtColor(*bottomSpherical, *bottomSpherical, CV_BGR2BGRA);
+    cvtColor(*bottomSpherical, *bottomSpherical, COLOR_BGR2BGRA);
   }
 
   // the alpha channel in bottomSpherical is the result of pole removal/flow. this can in
@@ -651,7 +651,7 @@ void prepareTopImagesThread(
   const string cameraDir = FLAGS_imgs_dir + "/" + rig.getTopCameraId();
   const string topImageFilename = FLAGS_frame_number + ".png";
   const string topImagePath = cameraDir + "/" + topImageFilename;
-  Mat topImage = imreadExceptionOnFail(topImagePath, CV_LOAD_IMAGE_COLOR);
+  Mat topImage = imreadExceptionOnFail(topImagePath, IMREAD_COLOR);
   const Camera& camera = rig.findCameraByDirection(kGlobalUp);
   topSpherical->create(
     FLAGS_eqr_height * camera.getFov() / M_PI,
@@ -667,7 +667,7 @@ void prepareTopImagesThread(
     M_PI / 2.0f - camera.getFov());
 
   // alpha feather the top spherical image for flow purposes
-  cvtColor(*topSpherical, *topSpherical, CV_BGR2BGRA);
+  cvtColor(*topSpherical, *topSpherical, COLOR_BGR2BGRA);
   const int yFeatherStart = topSpherical->rows - 1 - FLAGS_std_alpha_feather_size;
   for (int y = yFeatherStart ; y < topSpherical->rows ; ++y) {
     for (int x = 0; x < topSpherical->cols; ++x) {
@@ -889,8 +889,8 @@ void renderStereoPanorama() {
   // if so, flatten the image to 3 channel
   if (sphericalImageL.type() != CV_8UC3) {
     VLOG(1) << "Flattening from 4 channels to 3 channels";
-    cvtColor(sphericalImageL, sphericalImageL, CV_BGRA2BGR);
-    cvtColor(sphericalImageR, sphericalImageR, CV_BGRA2BGR);
+    cvtColor(sphericalImageL, sphericalImageL, COLOR_BGRA2BGR);
+    cvtColor(sphericalImageR, sphericalImageR, COLOR_BGRA2BGR);
   }
 
   if (FLAGS_save_debug_images) {

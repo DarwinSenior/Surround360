@@ -61,10 +61,10 @@ void testDisparity(const string imagePathL, const string imagePathR) {
 
   // we need alpha channels for flow. if they are missing, convert
   if (colorImageL.type() == CV_8UC3) {
-    cvtColor(colorImageL, colorImageL, CV_BGR2BGRA);
+    cvtColor(colorImageL, colorImageL, COLOR_BGR2BGRA);
   }
   if (colorImageR.type() == CV_8UC3) {
-    cvtColor(colorImageR, colorImageR, CV_BGR2BGRA);
+    cvtColor(colorImageR, colorImageR, COLOR_BGR2BGRA);
   }
 
   for (int rep = 0; rep < FLAGS_repetitions; ++rep) {
@@ -89,10 +89,10 @@ void testDisparity(const string imagePathL, const string imagePathR) {
     Mat flowVisLtoRColorWithLines  = visualizeFlowAsVectorField(novelViewGen->getFlowLtoR(), colorImageL);
     Mat flowVisRtoLColorWithLines  = visualizeFlowAsVectorField(novelViewGen->getFlowRtoL(), colorImageR);
 
-    cvtColor(flowVisRtoL,                 flowVisRtoL,                CV_GRAY2BGRA);
-    cvtColor(flowVisLtoR,                 flowVisLtoR,                CV_GRAY2BGRA);
-    cvtColor(flowVisLtoRColorWheel,       flowVisLtoRColorWheel,      CV_BGR2BGRA);
-    cvtColor(flowVisRtoLColorWheel,       flowVisRtoLColorWheel,      CV_BGR2BGRA);
+    cvtColor(flowVisRtoL,                 flowVisRtoL,                COLOR_GRAY2BGRA);
+    cvtColor(flowVisLtoR,                 flowVisLtoR,                COLOR_GRAY2BGRA);
+    cvtColor(flowVisLtoRColorWheel,       flowVisLtoRColorWheel,      COLOR_BGR2BGRA);
+    cvtColor(flowVisRtoLColorWheel,       flowVisRtoLColorWheel,      COLOR_BGR2BGRA);
 
     Mat horizontalVisLtoR = stackHorizontal(
       vector<Mat>({flowVisLtoR, flowVisLtoRColorWheel, flowVisLtoRColorWithLines}));
@@ -187,13 +187,13 @@ void middleburyInterpolationExperiment() {
     Mat groundTruthImageMid = imreadExceptionOnFail(imagePathMid, -1);
 
     if (inputImage0.type() == CV_8UC3) {
-      cvtColor(inputImage0, inputImage0, CV_BGR2BGRA);
+      cvtColor(inputImage0, inputImage0, COLOR_BGR2BGRA);
     }
     if (inputImage1.type() == CV_8UC3) {
-      cvtColor(inputImage1, inputImage1, CV_BGR2BGRA);
+      cvtColor(inputImage1, inputImage1, COLOR_BGR2BGRA);
     }
     if (groundTruthImageMid.type() == CV_8UC3) {
-      cvtColor(groundTruthImageMid, groundTruthImageMid, CV_BGR2BGRA);
+      cvtColor(groundTruthImageMid, groundTruthImageMid, COLOR_BGR2BGRA);
     }
 
     NovelViewGenerator* novelViewGen =
