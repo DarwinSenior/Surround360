@@ -9,14 +9,17 @@ using namespace surround360::optical_flow;
 using namespace cv;
 
 Mat compute_flow(const Mat& imgL, const Mat& imgR,
-    OpticalFlowInterface::DirectionHint direction) {
+    OpticalFlowInterface::DirectionHint direction, const string& method) {
   Mat flow, prevFlow, prevImgL, prevImgR;
 
   Mat img1(imgL), img2(imgR);
   if (img1.channels() == 3) { cvtColor(img1, img1, COLOR_BGR2BGRA); }
   if (img2.channels() == 3) { cvtColor(img2, img2, COLOR_BGR2BGRA); }
+  if (img1.depth() == CV_32F) { img1 = img1 * 255; }
+  if (img2.depth() == CV_32F) { img2 = img2 * 255; }
 
-  auto ref = makeOpticalFlowByName("pixflow_search_20");
+
+  auto ref = makeOpticalFlowByName(method);
   ref->computeOpticalFlow(img1, img2,
       prevFlow, prevImgL, prevImgR, flow, direction);
   delete ref;
@@ -74,12 +77,14 @@ PYBIND11_MODULE(fb360_flow, m) {
   m.def("compute_flow", &compute_flow,
       "create an optical flow algorithm",
       py::arg("imgL"), py::arg("imgR"),
-      py::arg("direction") = OpticalFlowInterface::DirectionHint::UNKNOWN);
+      py::arg("direction") = OpticalFlowInterface::DirectionHint::UNKNOWN,
+      py::arg("method") = "pixflow_low");
 
   m.def("flow2vis", &visualize,
       "convert 2d flow to 1d grayscale disparity(gray) or 3d colorwheel(color)",
       py::arg("flow"), py::arg("mode") = "gray");
-  m.def("wrap", &NovelViewUtil::generateNovelViewSimpleCvRemap,
-      "gvien an image and a flow vector field of the same size"
-      "generate a new image by applying the flow to the input scaled by t", py::arg("srcImg"), py::arg("flow"), py::arg("t") = 1);
+  m.def("warp", &NovelViewUtil::generateNovelViewSimpleCvRemap,
+      "given an image and a flow vector field of the same size"
+      "generate a new image by applying the flow to the input scaled by t", 
+      py::arg("srcImg"), py::arg("flow"), py::arg("t") = 1);
 }
