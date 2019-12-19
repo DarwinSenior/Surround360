@@ -7,6 +7,12 @@ set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 FIND_PACKAGE(OpenCV)
 FIND_PACKAGE(Ceres REQUIRED)
+
+# Note: The lines below allows a pip install pybind11 to be found by cmake.
+#       Do not remove.
+execute_process(COMMAND python -c
+                "import pybind11_cmake; print(pybind11_cmake.__path__[0])"
+                OUTPUT_VARIABLE pybind11_DIR OUTPUT_STRIP_TRAILING_WHITESPACE)
 FIND_PACKAGE(pybind11 REQUIRED)
 
 INCLUDE_DIRECTORIES(${OpenCV_INCLUDE_DIRS})
@@ -532,7 +538,7 @@ TARGET_LINK_LIBRARIES(
 )
 
 ### Python Binding ###
-ADD_LIBRARY(fb360_flow MODULE 
+PYBIND11_ADD_MODULE(fb360_flow 
   python/fb360_flow.cpp)
 TARGET_LINK_LIBRARIES(fb360_flow PRIVATE
   glog
@@ -541,7 +547,7 @@ TARGET_LINK_LIBRARIES(fb360_flow PRIVATE
   LibJSON
   ${OpenCV_LIBS}
   ${PLATFORM_SPECIFIC_LIBS}
-  pybind11::module)
+)
 SET_TARGET_PROPERTIES(fb360_flow PROPERTIES 
   POSITION_INDEPENDENT_CODE ON
   PREFIX "${PYTHON_MODULE_PREFIX}" SUFFIX "${PYTHON_MODULE_EXTENSION}")
