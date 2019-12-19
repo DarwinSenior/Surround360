@@ -1,3 +1,10 @@
+# FB360 Optical Flow
+
+This is a fork of the surround360 with python binding of the optical flow algorithms used in the system.
+
+The code is modified to be compatible with both opencv3.x and opencv4.x
+
+
 # Surround360 System
 
 Surround360 is a hardware and software system for capturing and rendering 3D (stereo) 360 videos and photos, suitable for viewing in VR. We divide the open source components of the system into three subdirectories:
