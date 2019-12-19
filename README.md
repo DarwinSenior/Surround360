@@ -4,6 +4,18 @@ This is a fork of the surround360 with python binding of the optical flow algori
 
 The code is modified to be compatible with both opencv3.x and opencv4.x
 
+After installing all the dependencies of surround360-render, run (preferably in a virtual environment)
+
+```
+pip install pybind11 pybind11-cmake
+```
+
+Proceed to build surround360_render and install if necessary. Finally add the newly generated library to your `PYTHONPATH` as follows,
+
+```
+export PYTHONPATH=$PYTHONPATH:*path_to_SUrround360*/surround360_render/lib
+```
+You may want to add this to your `.bashrc`
 
 # Surround360 System
 
