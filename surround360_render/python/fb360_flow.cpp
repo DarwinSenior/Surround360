@@ -33,8 +33,8 @@ Mat visualize(const Mat& flow, const string& mode) {
     return visualizeFlowAsGreyDisparity(flow);
   } else {
     throw surround360::VrCamException(
-      "Unrecognized visualization mode: " 
-      + mode 
+      "Unrecognized visualization mode: "
+      + mode
       + ". Use either 'color' or 'gray'");
   }
 }
@@ -85,6 +85,9 @@ PYBIND11_MODULE(fb360_flow, m) {
       py::arg("flow"), py::arg("mode") = "gray");
   m.def("warp", &NovelViewUtil::generateNovelViewSimpleCvRemap,
       "given an image and a flow vector field of the same size"
-      "generate a new image by applying the flow to the input scaled by t", 
+      "generate a new image by applying the flow to the input scaled by t",
       py::arg("srcImg"), py::arg("flow"), py::arg("t") = 1);
+  m.def("consistency_check", &NovelViewUtil::consistencyCheck,
+      R"(given left to right flow and right to left flow, create a consistency map for l2r flow)",
+      py::arg("flowLtoR"), py::arg("flowRtoL"), py::arg("tolerance")=1.0);
 }

@@ -73,6 +73,13 @@ struct NovelViewUtil {
     const Mat& imageR,
     const Mat& flowMagL,
     const Mat& flowMagR);
+
+  // create left right consistency check against the optical flow
+  // return a mask indicating the result of the check
+  static Mat consistencyCheck(
+    const Mat& flowLtoR,
+    const Mat& flowRtoL,
+    float tolerance = 1);
 };
 
 // the is an abstract base class for novel view generators

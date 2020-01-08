@@ -153,6 +153,29 @@ Mat NovelViewUtil::combineLazyViews(
   return blendImage;
 }
 
+Mat NovelViewUtil::consistencyCheck(
+    const Mat& flowLtoR,
+    const Mat& flowRtoL,
+    float tolerance) {
+  int h = flowLtoR.rows, w = flowLtoR.cols;
+  Mat px = Mat(h, w, CV_32F);
+  Mat py = Mat(h, w, CV_32F);
+
+  Mat ds[2]; split(flowLtoR, ds);
+  auto dxL = move(ds[0]); auto dyL = move(ds[1]);
+  for (int y = 0; y < h; ++y) {
+    for (int x = 0; x < w; ++x) {
+      px.at<float>(y, x) = x;
+      py.at<float>(y, x) = y;
+    }
+  }
+  Mat flowR; remap(flowRtoL, flowR, px+dxL, py+dyL, INTER_LINEAR);
+  split(flowR, ds);
+  auto dxR = move(ds[0]); auto dyR = move(ds[1]);
+  auto dx = dxL + dxR; auto dy = dyL + dyR;
+  return (dx.mul(dx) + dy.mul(dy)) < Scalar(tolerance * tolerance);
+}
+
 void NovelViewGeneratorLazyFlow::generateNovelView(
     const double shiftFromL,
     Mat& outNovelViewMerged,
