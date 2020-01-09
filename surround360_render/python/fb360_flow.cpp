@@ -12,11 +12,19 @@ Mat compute_flow(const Mat& imgL, const Mat& imgR,
     OpticalFlowInterface::DirectionHint direction, const string& method) {
   Mat flow, prevFlow, prevImgL, prevImgR;
 
-  Mat img1(imgL), img2(imgR);
-  if (img1.channels() == 3) { cvtColor(img1, img1, COLOR_BGR2BGRA); }
-  if (img2.channels() == 3) { cvtColor(img2, img2, COLOR_BGR2BGRA); }
-  if (img1.depth() == CV_32F) { img1 = img1 * 255; }
-  if (img2.depth() == CV_32F) { img2 = img2 * 255; }
+  Mat img1, img2;
+  if (imgL.channels() == 3) {
+    cvtColor(imgL, img1, COLOR_BGR2BGRA);
+  } else {
+    img1 = imgL.clone();
+  }
+  if (imgR.channels() == 3) {
+    cvtColor(imgR, img2, COLOR_BGR2BGRA);
+  } else {
+    img2 = imgR.clone();
+  }
+  if (imgL.depth() == CV_32F) { img1 = img1 * 255; }
+  if (imgR.depth() == CV_32F) { img2 = img2 * 255; }
 
 
   auto ref = makeOpticalFlowByName(method);
