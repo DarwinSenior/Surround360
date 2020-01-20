@@ -2,10 +2,10 @@ CMAKE_MINIMUM_REQUIRED(VERSION 3.2)
 
 PROJECT(Surround360Render CXX)
 set(CMAKE_CXX_STANDARD 14)
-
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
-FIND_PACKAGE(OpenCV)
+FIND_PACKAGE(OpenCV PATHS /usr/local/share/opencv4)
 FIND_PACKAGE(Ceres REQUIRED)
 
 # Note: The lines below allows a pip install pybind11 to be found by cmake.
@@ -54,7 +54,9 @@ ENDIF()
 SET(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 SET(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 SET(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
-set(CMAKE_OSX_ARCHITECTURES "${ARCHS_STANDARD}")
+SET(CMAKE_OSX_ARCHITECTURES "${ARCHS_STANDARD}")
+
+LINK_LIBRARIES(${CMAKE_DL_LIBS})
 
 ### Add custom targets to show all source and header files in Xcode ###
 
@@ -479,11 +481,11 @@ IF (DEFINED HALIDE_DIR)
   )
   ENDIF()
 ELSE()
-  ADD_EXECUTABLE(
+  ADD_EXECUTABLE (
     TestVignettingCalibration
     source/test/TestVignettingCalibration.cpp)
-  TARGET_COMPILE_FEATURES(TestVignettingCalibration PRIVATE cxx_range_for)
-  TARGET_LINK_LIBRARIES(
+  TARGET_COMPILE_FEATURES (TestVignettingCalibration PRIVATE cxx_range_for)
+  TARGET_LINK_LIBRARIES (
     TestVignettingCalibration
     LibVrCamera
     LibJSON
@@ -499,11 +501,11 @@ ENDIF()
 
 ### TestVignettingDataAcquisition ###
 
-ADD_EXECUTABLE(
+ADD_EXECUTABLE (
   TestVignettingDataAcquisition
   source/test/TestVignettingDataAcquisition.cpp)
-TARGET_COMPILE_FEATURES(TestVignettingDataAcquisition PRIVATE cxx_range_for)
-TARGET_LINK_LIBRARIES(
+TARGET_COMPILE_FEATURES (TestVignettingDataAcquisition PRIVATE cxx_range_for)
+TARGET_LINK_LIBRARIES (
   TestVignettingDataAcquisition
   LibVrCamera
   LibJSON
@@ -518,11 +520,11 @@ TARGET_LINK_LIBRARIES(
 
 ### GeoemtricCalibration ###
 
-ADD_EXECUTABLE(
+ADD_EXECUTABLE (
   GeometricCalibration
   source/calibration/GeometricCalibration.cpp
 )
-TARGET_LINK_LIBRARIES(
+TARGET_LINK_LIBRARIES (
   GeometricCalibration
   LibVrCamera
   LibJSON
@@ -538,16 +540,27 @@ TARGET_LINK_LIBRARIES(
 )
 
 ### Python Binding ###
-PYBIND11_ADD_MODULE(fb360_flow 
+PYBIND11_ADD_MODULE (fb360_flow
   python/fb360_flow.cpp)
-TARGET_LINK_LIBRARIES(fb360_flow PRIVATE
+TARGET_LINK_LIBRARIES (fb360_flow PRIVATE
   glog
   gflags
   LibVrCamera
   LibJSON
   ${OpenCV_LIBS}
-  ${PLATFORM_SPECIFIC_LIBS}
-)
-SET_TARGET_PROPERTIES(fb360_flow PROPERTIES 
+  ${PLATFORM_SPECIFIC_LIBS})
+SET_TARGET_PROPERTIES (fb360_flow PROPERTIES
   POSITION_INDEPENDENT_CODE ON
   PREFIX "${PYTHON_MODULE_PREFIX}" SUFFIX "${PYTHON_MODULE_EXTENSION}")
+
+### Matlab Binding ###
+find_package (Matlab COMPONENTS MX_LIBRARY)
+if ( Matlab_FOUND )
+  matlab_add_mex(NAME matFB360Flow MODULE SRC matlab/fb360_flow.cc matlab/MxArray.cpp LINK_TO
+    glog
+    gflags
+    LibVrCamera
+    LibJSON
+    ${OpenCV_LIBS}
+    ${PLATFORM_SPECIFIC_LIBS})
+endif ()
